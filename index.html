@@ -7,8 +7,8 @@
 
 
 <script>
- const SUPABASE_URL = 'https://lmdtfmxgcjchswqslmcq.supabase.co';   
- const SUPABASE_KEY = 'sb_publishable_eQDiSYujnjjKR0LdhH9G6g_olXeZHH9';
+  const SUPABASE_URL = 'https://lmdtfmxgcjchswqslmcq.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_eQDiSYujnjjKR0LdhH9G6g_olXeZHH9';
 </script>
 
 <!-- Supabase JS client (CDN) -->
@@ -94,25 +94,29 @@ input::placeholder,textarea::placeholder{color:var(--muted)}
 .bpts{background:rgba(52,211,153,.12);color:var(--green);margin-left:auto}
 .q-text{font-size:18px;font-weight:500;line-height:1.65;color:#f0f6ff;margin-bottom:26px}
 
-/* MCQ — locked states */
+/* MCQ — changeable selection */
 .opts{display:flex;flex-direction:column;gap:11px;margin-bottom:26px}
-.opt{background:rgba(255,255,255,.03);border:1.5px solid var(--border2);border-radius:13px;padding:14px 18px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer;text-align:left;display:flex;align-items:center;gap:14px;transition:background .15s,border-color .15s,opacity .25s;line-height:1.5;position:relative}
-.opt:hover:not(.chosen):not(.locked-out){background:rgba(59,130,246,.06);border-color:rgba(59,130,246,.3)}
-.opt.chosen{background:rgba(59,130,246,.15);border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,.12);cursor:default}
-.opt.chosen::after{content:'🔒';position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:13px;opacity:.45}
-.opt.locked-out{opacity:.25;pointer-events:none;cursor:not-allowed}
+.opt{background:rgba(255,255,255,.03);border:1.5px solid var(--border2);border-radius:13px;padding:14px 18px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer;text-align:left;display:flex;align-items:center;gap:14px;transition:background .15s,border-color .15s;line-height:1.5;position:relative}
+.opt:hover{background:rgba(59,130,246,.06);border-color:rgba(59,130,246,.3)}
+.opt.chosen{background:rgba(59,130,246,.15);border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,.12)}
 .opt-ltr{width:30px;height:30px;border-radius:9px;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;flex-shrink:0;transition:all .15s}
 .opt.chosen .opt-ltr{background:var(--blue);color:#fff}
 
-/* T/F — locked states */
+/* T/F — changeable selection */
 .tf-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:26px}
 .tf-btn{background:rgba(255,255,255,.03);border:1.5px solid var(--border2);border-radius:16px;padding:24px 16px;color:var(--text);font-family:'Syne',sans-serif;font-size:17px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:8px;position:relative}
-.tf-btn:hover:not(.tf-chosen-t):not(.tf-chosen-f):not(.tf-dim){background:rgba(255,255,255,.06)}
-.tf-btn.tf-chosen-t{background:rgba(52,211,153,.12);border-color:var(--green);color:#6ee7b7;cursor:default;box-shadow:0 0 0 3px rgba(52,211,153,.1)}
-.tf-btn.tf-chosen-f{background:rgba(248,113,113,.12);border-color:var(--red);color:#fca5a5;cursor:default;box-shadow:0 0 0 3px rgba(248,113,113,.1)}
-.tf-btn.tf-chosen-t::after,.tf-btn.tf-chosen-f::after{content:'🔒';position:absolute;top:9px;right:11px;font-size:12px;opacity:.4}
-.tf-btn.tf-dim{opacity:.22;pointer-events:none;cursor:not-allowed}
+.tf-btn:hover{background:rgba(255,255,255,.07)}
+.tf-btn.tf-chosen-t{background:rgba(52,211,153,.12);border-color:var(--green);color:#6ee7b7;box-shadow:0 0 0 3px rgba(52,211,153,.1)}
+.tf-btn.tf-chosen-f{background:rgba(248,113,113,.12);border-color:var(--red);color:#fca5a5;box-shadow:0 0 0 3px rgba(248,113,113,.1)}
 .tf-icon{font-size:32px}
+
+/* Timer */
+.timer-bar{height:5px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden;margin-bottom:6px}
+.timer-fill{height:100%;border-radius:99px;transition:width 1s linear,background .5s}
+.timer-chip{display:inline-flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;padding:4px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05)}
+.timer-chip.warn{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.35);color:var(--amber2)}
+.timer-chip.danger{background:rgba(248,113,113,.12);border-color:rgba(248,113,113,.35);color:var(--red);animation:pulse .8s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 
 /* Short answer */
 .short-wrap{margin-bottom:26px}
@@ -300,11 +304,74 @@ let S = {
   gradingIdx:0,
   myResult:null, oppResult:null,
   tab:'mine', compareCode:'',
-  leaderboard:[], lbLoading:false, savedToDb:false
+  leaderboard:[], lbLoading:false, savedToDb:false,
+  timerDuration:0,   // total seconds chosen (0 = no timer)
+  timerLeft:0,       // seconds remaining
+  timerInterval:null
 };
 function set(o){Object.assign(S,o);draw();}
 
-/* =================== AI GRADING =================== */
+/* =================== TIMER =================== */
+function startTimer(minutes) {
+  if (S.timerInterval) clearInterval(S.timerInterval);
+  const secs = minutes * 60;
+  S.timerDuration = secs;
+  S.timerLeft = secs;
+  S.timerInterval = setInterval(() => {
+    S.timerLeft--;
+    updateTimerUI();
+    if (S.timerLeft <= 0) {
+      clearInterval(S.timerInterval);
+      S.timerInterval = null;
+      // save current short answer if on one before force-submitting
+      const q = QS[S.qi];
+      if (q && q.type === 'short') {
+        const ta = document.getElementById('sta');
+        if (ta) S.answers[q.id] = ta.value.trim();
+      }
+      if (S.sel !== null && q && q.type !== 'short') {
+        S.answers[q.id] = S.sel;
+      }
+      doGrade({...S.answers});
+    }
+  }, 1000);
+}
+
+function updateTimerUI() {
+  const el = document.getElementById('timerChip');
+  const bar = document.getElementById('timerBarFill');
+  if (!el || !bar) return;
+  const m = Math.floor(S.timerLeft / 60);
+  const s = S.timerLeft % 60;
+  el.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+  const pct = (S.timerLeft / S.timerDuration) * 100;
+  bar.style.width = pct + '%';
+  const color = pct > 50 ? 'var(--green)' : pct > 20 ? 'var(--amber)' : 'var(--red)';
+  bar.style.background = color;
+  el.className = 'timer-chip' + (pct <= 20 ? ' danger' : pct <= 50 ? ' warn' : '');
+}
+
+function stopTimer() {
+  if (S.timerInterval) { clearInterval(S.timerInterval); S.timerInterval = null; }
+}
+
+/* =================== QUIZ LOGIC =================== */
+function startQuiz() {
+  if (!S.name.trim()) {set({err:'Enter your name first!'}); return;}
+  const dur = parseInt(document.getElementById('timerSel')?.value || '0');
+  S.timerDuration = dur * 60;
+  S.timerLeft = dur * 60;
+  set({screen:'quiz', qi:0, sel:null, answers:{}, err:''});
+  if (dur > 0) startTimer(dur);
+}
+
+// Fix 2: No locking — always allow changing answer
+function pickOpt(i) {
+  set({sel:i});
+}
+function pickTF(v) {
+  set({sel:v});
+}
 async function gradeShort(question, expectedAns, studentAns) {
   const prompt = `You are grading a Machine Learning quiz for a BTech AI/ML student doing CampusX 100 Days of ML (Day 1-11).
 
@@ -382,21 +449,8 @@ async function loadLeaderboard() {
   } catch(e) { return []; }
 }
 
-/* =================== QUIZ LOGIC =================== */
-function startQuiz() {
-  if (!S.name.trim()) {set({err:'Enter your name first!'}); return;}
-  set({screen:'quiz', qi:0, sel:null, answers:{}, err:''});
-}
 
-function pickOpt(i) {
-  if (S.sel !== null) return;
-  set({sel:i});
-}
-function pickTF(v) {
-  if (S.sel !== null) return;
-  set({sel:v});
-}
-
+/* =================== NEXT / GRADE =================== */
 function next() {
   const q = QS[S.qi];
   const ta = document.getElementById('sta');
@@ -406,12 +460,14 @@ function next() {
   if (S.qi < QS.length - 1) {
     set({answers:newA, qi:S.qi+1, sel:null});
   } else {
+    stopTimer();
     set({answers:newA, sel:null});
     doGrade(newA);
   }
 }
 
 async function doGrade(finalA) {
+  stopTimer();
   set({screen:'grading', gradingIdx:0});
   let score = 0;
   const details = {};
@@ -567,7 +623,8 @@ function toast(msg) {
   setTimeout(()=>t.classList.remove('show'), 2400);
 }
 function reset() {
-  Object.assign(S,{screen:'home',name:'',quizLabel:'',err:'',qi:0,sel:null,answers:{},gradingIdx:0,myResult:null,oppResult:null,tab:'mine',compareCode:'',leaderboard:[],lbLoading:false,savedToDb:false});
+  stopTimer();
+  Object.assign(S,{screen:'home',name:'',quizLabel:'',err:'',qi:0,sel:null,answers:{},gradingIdx:0,myResult:null,oppResult:null,tab:'mine',compareCode:'',leaderboard:[],lbLoading:false,savedToDb:false,timerDuration:0,timerLeft:0,timerInterval:null});
   draw();
 }
 
@@ -610,6 +667,15 @@ function rHome() {
   <div class="field"><label class="lbl">Quiz Label (optional)</label>
     <input type="text" id="labelIn" placeholder="e.g. Wednesday Week 1" value="${esc(S.quizLabel)}" autocomplete="off"/>
   </div>
+  <div class="field"><label class="lbl">Timer (optional)</label>
+    <select id="timerSel" style="background:rgba(255,255,255,.03);border:1.5px solid var(--border2);border-radius:12px;padding:14px 16px;color:var(--text);font-size:15px;font-family:'DM Sans',sans-serif;width:100%;outline:none">
+      <option value="0">No timer — take as long as you want</option>
+      <option value="10">10 minutes</option>
+      <option value="15">15 minutes</option>
+      <option value="20">20 minutes</option>
+      <option value="30">30 minutes</option>
+    </select>
+  </div>
   <button class="btn btn-p" id="startBtn">&#128640; Start Quiz</button>
   ${dbReady ? `<div style="margin-top:12px"><button class="btn btn-o" id="lbBtn">&#127942; View Leaderboard</button></div>` : ''}
   <div style="margin-top:22px;background:rgba(255,255,255,.03);border:1px solid var(--border2);border-radius:14px;padding:18px">
@@ -628,22 +694,39 @@ function rHome() {
 function rQuiz() {
   const q = QS[S.qi];
   const pct = (S.qi / QS.length) * 100;
-  const locked = S.sel !== null;
   const bdgMap = {mcq:'bmcq', tf:'btf', short:'bsh'};
   const typeLbl = {mcq:'MCQ', tf:'True / False', short:'Short Answer'};
 
+  // Timer display
+  let timerHTML = '';
+  if (S.timerDuration > 0) {
+    const m = Math.floor(S.timerLeft / 60);
+    const s2 = S.timerLeft % 60;
+    const timerPct = (S.timerLeft / S.timerDuration) * 100;
+    const clr = timerPct > 50 ? 'var(--green)' : timerPct > 20 ? 'var(--amber)' : 'var(--red)';
+    const cls = timerPct <= 20 ? 'danger' : timerPct <= 50 ? 'warn' : '';
+    timerHTML = `<div style="margin-bottom:14px">
+      <div class="timer-bar"><div id="timerBarFill" class="timer-fill" style="width:${timerPct}%;background:${clr}"></div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:5px">
+        <span style="font-size:11px;color:var(--muted)">Time remaining</span>
+        <span id="timerChip" class="timer-chip ${cls}">${m}:${s2.toString().padStart(2,'0')}</span>
+      </div>
+    </div>`;
+  }
+
   let area = '';
   if (q.type === 'mcq') {
+    // No locking — chosen just highlights, all still clickable
     area = `<div class="opts">${q.opts.map((o,i) => {
-      let cls = 'opt';
-      if (locked) cls += i === S.sel ? ' chosen' : ' locked-out';
+      const cls = 'opt' + (S.sel === i ? ' chosen' : '');
       return `<button class="${cls}" data-i="${i}"><span class="opt-ltr">${String.fromCharCode(65+i)}</span>${esc(o)}</button>`;
     }).join('')}</div>`;
   } else if (q.type === 'tf') {
     const sT = S.sel===true, sF = S.sel===false;
+    // No locking — both always clickable
     area = `<div class="tf-row">
-      <button class="tf-btn ${sT ? 'tf-chosen-t' : sF ? 'tf-dim' : ''}" id="tfT"><span class="tf-icon">&#9989;</span>True</button>
-      <button class="tf-btn ${sF ? 'tf-chosen-f' : sT ? 'tf-dim' : ''}" id="tfF"><span class="tf-icon">&#10060;</span>False</button>
+      <button class="tf-btn ${sT ? 'tf-chosen-t' : ''}" id="tfT"><span class="tf-icon">&#9989;</span>True</button>
+      <button class="tf-btn ${sF ? 'tf-chosen-f' : ''}" id="tfF"><span class="tf-icon">&#10060;</span>False</button>
     </div>`;
   } else {
     area = `<div class="short-wrap">
@@ -660,6 +743,7 @@ function rQuiz() {
     <div class="pchip"><span class="pdot"></span><span class="pname">${esc(S.name)}</span></div>
     <div class="qinfo">Q <strong style="font-family:'JetBrains Mono',monospace;font-size:14px">${S.qi+1}</strong> / ${QS.length}</div>
   </div>
+  ${timerHTML}
   <div class="prog">
     <div class="prog-track"><div class="prog-fill" style="width:${pct}%"></div></div>
     <div class="prog-labels"><span>Progress</span><span>${Math.round(pct)}%</span></div>
