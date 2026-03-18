@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>CampusX ML Quiz</title>
 
+
 <script>
-  const SUPABASE_URL = 'https://lmdtfmxgcjchswqslmcq.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_eQDiSYujnjjKR0LdhH9G6g_olXeZHH9';
+ const SUPABASE_URL = 'https://lmdtfmxgcjchswqslmcq.supabase.co';   
+ const SUPABASE_KEY = 'sb_publishable_eQDiSYujnjjKR0LdhH9G6g_olXeZHH9';
 </script>
 
 <!-- Supabase JS client (CDN) -->
@@ -230,60 +231,65 @@ if (dbReady) {
 
 /* =================== QUESTIONS =================== */
 const QS = [
-  {id:1,type:'mcq',day:'Bonus',pts:1,
-   q:"What is the full form of EDA?",
-   opts:["Exploratory Data Analysis","Exclusive Data Algorithm","Extended Data Analytics","Experimental Data Assessment"],ans:0},
-  {id:2,type:'mcq',day:'Day 1',pts:1,
-   q:"Complete the ML paradigm: Data + Output \u2192 ___",
-   opts:["Rules / Model","Predictions","Input Features","Labels"],ans:0},
-  {id:3,type:'mcq',day:'Day 2',pts:1,
-   q:"What is the correct relationship between AI, ML, and Deep Learning?",
-   opts:["AI \u2283 ML \u2283 DL","ML \u2283 AI \u2283 DL","DL \u2283 ML \u2283 AI","All three are independent"],ans:0},
+  // ── MCQ ──────────────────────────────────────────────────────────
+  {id:1,type:'mcq',day:'Day 2',pts:1,
+   q:"Why did Expert Systems fail for complex tasks like image classification?",
+   opts:["Too many rules to write manually","They required too much GPU","They only worked on text data","They had no inference engine"],ans:0},
+  {id:2,type:'mcq',day:'Day 5',pts:1,
+   q:"What happens when learning rate \u03b7 is set very HIGH in Online Learning?",
+   opts:["Fast adaptation but unstable predictions","Slow adaptation but stable predictions","Model stops learning entirely","Memory usage increases"],ans:0},
+  {id:3,type:'mcq',day:'Day 4',pts:1,
+   q:"Which is a DISADVANTAGE of Batch Learning?",
+   opts:["Cannot adapt to new patterns without full retraining","Predictions are unstable","It requires online data streams","It is too simple to implement"],ans:0},
   {id:4,type:'mcq',day:'Day 3',pts:1,
-   q:"Predicting house prices is an example of which ML task?",
-   opts:["Regression","Classification","Clustering","Reinforcement Learning"],ans:0},
+   q:"Which ML type is best when you have a large dataset but very few labels?",
+   opts:["Semi-supervised Learning","Supervised Learning","Reinforcement Learning","Unsupervised Learning"],ans:0},
   {id:5,type:'mcq',day:'Day 6',pts:1,
-   q:"KNN is an example of which learning type?",
-   opts:["Instance-Based Learning","Model-Based Learning","Online Learning","Batch Learning"],ans:0},
-  {id:6,type:'mcq',day:'Day 7',pts:1,
-   q:"Which is NOT a valid fix for overfitting?",
-   opts:["Increasing model complexity","L1/L2 Regularization","Getting more data","Cross-validation"],ans:0},
-  {id:7,type:'mcq',day:'Day 9',pts:1,
-   q:"Which ML project stage takes 70-80% of total time?",
-   opts:["EDA + Feature Engineering","Model Training","Model Deployment","Problem Framing"],ans:0},
-  {id:8,type:'mcq',day:'Day 11',pts:1,
-   q:"Best metric for churn prediction with imbalanced classes?",
-   opts:["F1-Score","Accuracy","RMSE","R\u00b2 Score"],ans:0},
-  {id:9,type:'tf',day:'Day 2',pts:1,
-   q:"Deep Learning performance keeps improving with more data, while traditional ML plateaus.",ans:true},
-  {id:10,type:'tf',day:'Day 4',pts:1,
-   q:"In Batch Learning, the model updates continuously after each new data point.",ans:false},
-  {id:11,type:'tf',day:'Day 5',pts:1,
-   q:"Out-of-Core Learning requires the entire dataset to fit into RAM.",ans:false},
-  {id:12,type:'tf',day:'Day 6',pts:1,
-   q:"KNN is called a lazy learner because all computation happens at prediction time, not training time.",ans:true},
-  {id:13,type:'tf',day:'Day 7',pts:1,
-   q:"High Bias leads to Underfitting, while High Variance leads to Overfitting.",ans:true},
-  {id:14,type:'tf',day:'Day 10',pts:1,
-   q:"A Data Scientist's primary focus is deploying and maintaining ML models in production.",ans:false},
-  {id:15,type:'short',day:'Day 3',pts:2,
-   q:"Name all 4 types of Machine Learning with one example each.",
-   ans:"Supervised (spam detection), Unsupervised (customer segmentation), Semi-supervised (medical imaging with few labels), Reinforcement Learning (game playing AI using rewards and penalties)"},
-  {id:16,type:'short',day:'Day 3',pts:2,
-   q:"Name the 5 key components of Reinforcement Learning.",
-   ans:"Agent, Environment, Action, Reward, Policy"},
-  {id:17,type:'short',day:'Day 7',pts:2,
-   q:"Explain the Bias-Variance Tradeoff in your own words.",
-   ans:"Bias is error from wrong assumptions causing underfitting (model too simple). Variance is sensitivity to training data fluctuations causing overfitting (model memorises noise). Reducing one typically increases the other."},
-  {id:18,type:'short',day:'Day 9',pts:2,
-   q:"List the 7 stages of the ML Development Lifecycle in order.",
-   ans:"1. Frame the Problem, 2. Gather Data, 3. EDA, 4. Feature Engineering, 5. Model Training, 6. Model Evaluation, 7. Model Deployment and Monitoring"},
-  {id:19,type:'short',day:'Day 5',pts:2,
-   q:"What is Online Learning and what does learning rate \u03b7 control?",
-   ans:"Online Learning updates the model incrementally after each new data point. Learning rate eta controls adaptation speed: high eta means fast but unstable, low eta means slow but stable."},
+   q:"In Model-Based Learning, what happens to the training data after the model is trained?",
+   opts:["It is discarded — only the learned parameters are kept","It is stored for future predictions","It is compressed and archived","It is used again at prediction time"],ans:0},
+  {id:6,type:'mcq',day:'Day 8',pts:1,
+   q:"Product recommendation systems most commonly use which ML approach?",
+   opts:["Collaborative Filtering / Unsupervised or RL","Supervised Classification","Batch Learning with SVM","Linear Regression"],ans:0},
+  {id:7,type:'mcq',day:'Day 1',pts:1,
+   q:"Which scenario is ML preferred over traditional programming?",
+   opts:["Pattern recognition at scale like face recognition","Simple arithmetic calculations","Rule-based sorting of a fixed list","Sending an email automatically"],ans:0},
+  {id:8,type:'mcq',day:'Day 10',pts:1,
+   q:"Which role focuses on deploying, scaling, and maintaining models in production?",
+   opts:["ML Engineer","Data Scientist","Data Analyst","Research Scientist"],ans:0},
+
+  // ── TRUE / FALSE ─────────────────────────────────────────────────
+  {id:9,type:'tf',day:'Day 1',pts:1,
+   q:"In traditional programming, the approach is: Data + Rules \u2192 Output.",ans:true},
+  {id:10,type:'tf',day:'Day 3',pts:1,
+   q:"Reinforcement Learning uses labelled training data to learn the correct output.",ans:false},
+  {id:11,type:'tf',day:'Day 6',pts:1,
+   q:"Model-Based Learning stores all training examples and uses them at prediction time.",ans:false},
+  {id:12,type:'tf',day:'Day 9',pts:1,
+   q:"Most ML project failures are caused by bad models, not bad data.",ans:false},
+  {id:13,type:'tf',day:'Day 2',pts:1,
+   q:"Machine Learning is a subset of Artificial Intelligence.",ans:true},
+  {id:14,type:'tf',day:'Day 7',pts:1,
+   q:"A model with high variance tends to underfit the training data.",ans:false},
+
+  // ── SHORT ANSWER ─────────────────────────────────────────────────
+  {id:15,type:'short',day:'Day 2',pts:2,
+   q:"What was an Expert System? What were its two components and why did it fail?",
+   ans:"Expert System = Knowledge Base + Inference Engine. It encoded human knowledge as if-else rules. It failed because writing rules manually for complex problems like image classification was impossible — too many edge cases and rules to code."},
+  {id:16,type:'short',day:'Day 4',pts:2,
+   q:"What is Batch Learning? Give 2 advantages and 2 disadvantages.",
+   ans:"Batch Learning trains on the entire dataset at once and deploys as a static model. Advantages: simple to implement, stable predictions. Disadvantages: cannot adapt to new data without full retraining, retraining is expensive in time and compute."},
+  {id:17,type:'short',day:'Day 6',pts:2,
+   q:"What is the difference between Instance-Based and Model-Based Learning? Give one example of each.",
+   ans:"Instance-Based: memorises all training examples and compares new data to stored ones using similarity at prediction time. Example: KNN. Model-Based: learns a generalised function (parameters) from data, discards data after training, fast prediction. Example: Linear Regression."},
+  {id:18,type:'short',day:'Day 8',pts:2,
+   q:"Give 3 real-world ML applications. For each, mention the ML type and a common algorithm.",
+   ans:"1. Spam detection: Supervised Classification, Naive Bayes or SVM. 2. Product recommendation: Unsupervised or RL, Collaborative Filtering. 3. Fraud detection: Anomaly Detection, Isolation Forest."},
+  {id:19,type:'short',day:'Day 10',pts:2,
+   q:"What is the difference between a Data Scientist and an ML Engineer?",
+   ans:"Data Scientist: builds models, extracts insights, does EDA and feature engineering, focuses on model quality. ML Engineer: deploys, scales, and maintains models in production, focuses on system reliability and performance."},
   {id:20,type:'short',day:'Day 11',pts:2,
-   q:"What are the 5 questions to frame any ML problem?",
-   ans:"1. What is output y? 2. What are inputs X? 3. What ML type? 4. What metric equals success? 5. What are the constraints (latency, data size, interpretability)?"}
+   q:"Frame the churn prediction problem — state the ML type, task, inputs, metric, and deployment strategy.",
+   ans:"Supervised Learning. Binary Classification (churn yes/no). Inputs: usage patterns, demographics, tenure. Metric: F1-Score because classes are imbalanced. Deployment: batch — score all customers weekly."}
 ];
 const MAX_PTS = QS.reduce((s,q) => s + q.pts, 0);
 
